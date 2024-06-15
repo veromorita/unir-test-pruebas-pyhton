@@ -22,3 +22,20 @@ class TestUtil(unittest.TestCase):
         self.assertRaises(TypeError, util.convert_to_number, "s")
         self.assertRaises(TypeError, util.convert_to_number, None)
         self.assertRaises(TypeError, util.convert_to_number, object())
+    
+    def test_convert_to_number_with_int(self):
+        self.assertEqual(util.convert_to_number("2"), 2)
+
+    def test_convert_to_number_with_float(self):
+        self.assertEqual(util.convert_to_number("2.5"), 2.5)
+
+    def test_convert_to_number_with_invalid_string(self):
+        with self.assertRaises(TypeError):
+            util.convert_to_number("two")
+
+    def test_convert_to_number_with_none(self):
+        with self.assertRaises(TypeError):
+            util.convert_to_number(None)
+            
+if __name__ == "__main__":  # pragma: no cover
+    unittest.main()

@@ -1,4 +1,5 @@
 import app
+import math
 
 
 class InvalidPermissions(Exception):
@@ -32,12 +33,30 @@ class Calculator:
         self.check_types(x, y)
         return x ** y
 
+    def sqrt(self, x):
+        self.check_single_type(x)
+        if x < 0:
+            raise TypeError("Cannot compute the square root of a negative number")
+        return math.sqrt(x)
+
+    def log10(self, x):
+        self.check_single_type(x)
+        if x <= 0:
+            raise TypeError("Logarithm undefined for non-positive values")
+        return math.log10(x)
+        
     def check_types(self, x, y):
         if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
             raise TypeError("Parameters must be numbers")
-
+    
+    def check_single_type(self, x):
+        if not isinstance(x, (int, float)):
+            raise TypeError("Parameter must be a number")
 
 if __name__ == "__main__":  # pragma: no cover
     calc = Calculator()
-    result = calc.add(2, 2)
-    print(result)
+    try:
+        result = calc.add(2, 2)
+        print(f"2 + 2 = {result}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
