@@ -39,7 +39,7 @@ test-e2e:
 	docker stop calc-web || exit 0
 	docker rm --force calc-web || exit 0
 	docker run -d --rm --volume "$(PROJECT_DIR):/opt/calc" --network calc-test-e2e --env PYTHONPATH=/opt/calc --name apiserver --env FLASK_APP=app/api.py -p 5000:5000 -w /opt/calc calculator-app:latest flask run --host=0.0.0.0
-	docker run -d --rm --volume $(PROJECT_DIR)/web:/usr/share/nginx/html --volume $(PROJECT_DIR)/web/constants.test.js:/usr/share/nginx/html/constants.js --volume $(PROJECT_DIR)/web/nginx.conf:/etc/nginx/conf.d/default.conf --network calc-test-e2e --name calc-web -p 80:80 nginx
+	docker run -d --rm --volume $(PROJECT_DIR)/web:/usr/share/nginx/html --volume $(PROJECT_DIR)/web/constants.test.js:/usr/share/nginx/html/constants.js --volume "$(PROJECT_DIR)/web/nginx.conf:/etc/nginx/conf.d/default.conf" --network calc-test-e2e --name calc-web -p 80:80 nginx
 	docker run --rm --volume $(PROJECT_DIR)/test/e2e/cypress.json:/cypress.json --volume $(PROJECT_DIR)/test/e2e/cypress:/cypress --volume $(PROJECT_DIR)/results:/results  --network calc-test-e2e cypress/included:4.9.0 --browser chrome || exit 0
 	docker rm --force apiserver
 	docker rm --force calc-web
@@ -53,7 +53,7 @@ test-e2e-wiremock:
 	docker stop calc-web || exit 0
 	docker rm --force calc-web || exit 0
 	docker run -d --rm --name apiwiremock --volume $(PROJECT_DIR)/test/wiremock/stubs:/home/wiremock --network calc-test-e2e-wiremock -p 8080:8080 -p 8443:8443 calculator-wiremock
-	docker run -d --rm --volume $(PROJECT_DIR)/web:/usr/share/nginx/html --volume $(PROJECT_DIR)/web/constants.wiremock.js:/usr/share/nginx/html/constants.js --volume $(PROJECT_DIR)/web/nginx.conf:/etc/nginx/conf.d/default.conf --network calc-test-e2e-wiremock --name calc-web -p 80:80 nginx
+	docker run -d --rm --volume $(PROJECT_DIR)/web:/usr/share/nginx/html --volume $(PROJECT_DIR)/web/constants.wiremock.js:/usr/share/nginx/html/constants.js --volume "$(PROJECT_DIR)/web/nginx.conf:/etc/nginx/conf.d/default.conf" --network calc-test-e2e-wiremock --name calc-web -p 80:80 nginx
 	docker run --rm --volume $(PROJECT_DIR)/test/e2e/cypress.json:/cypress.json --volume $(PROJECT_DIR)/test/e2e/cypress:/cypress --volume $(PROJECT_DIR)/results:/results --network calc-test-e2e-wiremock cypress/included:4.9.0 --browser chrome || exit 0
 	docker rm --force apiwiremock
 	docker rm --force calc-web
@@ -61,7 +61,7 @@ test-e2e-wiremock:
 	docker network rm calc-test-e2e-wiremock
 
 run-web:
-	docker run --rm --volume $(PROJECT_DIR)/web:/usr/share/nginx/html  --volume $(PROJECT_DIR)/web/constants.local.js:/usr/share/nginx/html/constants.js --volume $(PROJECT_DIR)/web/nginx.conf:/etc/nginx/conf.d/default.conf --name calc-web -p 80:80 nginx
+	docker run --rm --volume $(PROJECT_DIR)/web:/usr/share/nginx/html  --volume $(PROJECT_DIR)/web/constants.local.js:/usr/share/nginx/html/constants.js --volume "$(PROJECT_DIR)/web/nginx.conf:/etc/nginx/conf.d/default.conf" --name calc-web -p 80:80 nginx
 
 stop-web:
 	docker stop calc-web
@@ -95,7 +95,7 @@ ZAP_TARGET_URL := http://calc-web/
 zap-scan:
 	docker network create calc-test-zap || exit 0
 	docker run -d --rm --network calc-test-zap --volume "$(PROJECT_DIR):/opt/calc" --name apiserver --network-alias apiserver --env PYTHONPATH=/opt/calc --env FLASK_APP=app/api.py -p 5000:5000 -w /opt/calc calculator-app:latest flask run --host=0.0.0.0
-	docker run -d --rm --network calc-test-zap --volume $(PROJECT_DIR)/web:/usr/share/nginx/html  --volume $(PROJECT_DIR)/web/constants.test.js:/usr/share/nginx/html/constants.js --volume $(PROJECT_DIR)/web/nginx.conf:/etc/nginx/conf.d/default.conf --name calc-web -p 80:80 nginx
+	docker run -d --rm --network calc-test-zap --volume $(PROJECT_DIR)/web:/usr/share/nginx/html  --volume $(PROJECT_DIR)/web/constants.test.js:/usr/share/nginx/html/constants.js --volume "$(PROJECT_DIR)/web/nginx.conf:/etc/nginx/conf.d/default.conf" --name calc-web -p 80:80 nginx
 	docker run -d --rm --network calc-test-zap --name zap-node -u zap -p 8080:8080 -i owasp/zap2docker-stable zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.addrs.addr.name=.* -config api.addrs.addr.regex=true -config api.key=$(ZAP_API_KEY)
 	sleep 10
 	docker run --rm --volume "$(PROJECT_DIR):/opt/calc" --network calc-test-zap --env PYTHONPATH=/opt/calc --env ZAP_API_KEY=$(ZAP_API_KEY) --env ZAP_API_URL=$(ZAP_API_URL) --env TARGET_URL=$(ZAP_TARGET_URL) -w /opt/calc calculator-app:latest pytest --junit-xml=results/sec_result.xml -m security  || exit 0
@@ -111,7 +111,7 @@ build-jmeter:
 start-jmeter-record:
 	docker network create calc-test-jmeter || exit 0
 	docker run -d --rm --network calc-test-jmeter --volume "$(PROJECT_DIR):/opt/calc" --name apiserver --network-alias apiserver --env PYTHONPATH=/opt/calc --env FLASK_APP=app/api.py -p 5000:5000 -w /opt/calc calculator-app:latest flask run --host=0.0.0.0
-	docker run -d --rm --network calc-test-jmeter --volume $(PROJECT_DIR)/web:/usr/share/nginx/html  --volume $(PROJECT_DIR)/web/constants.test.js:/usr/share/nginx/html/constants.js --volume $(PROJECT_DIR)/web/nginx.conf:/etc/nginx/conf.d/default.conf --name calc-web -p 80:80 nginx
+	docker run -d --rm --network calc-test-jmeter --volume $(PROJECT_DIR)/web:/usr/share/nginx/html  --volume $(PROJECT_DIR)/web/constants.test.js:/usr/share/nginx/html/constants.js --volume "$(PROJECT_DIR)/web/nginx.conf:/etc/nginx/conf.d/default.conf" --name calc-web -p 80:80 nginx
 
 stop-jmeter-record:
 	docker stop apiserver || exit 0
