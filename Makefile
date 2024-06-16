@@ -16,11 +16,11 @@ interactive:
 	docker run -ti --rm --volume "$(PROJECT_DIR):/opt/calc" --env PYTHONPATH=/opt/calc  -w /opt/calc calculator-app:latest bash
 
 test-unit:
-	docker run --rm --volume "$(PROJECT_DIR):/opt/calc" --env PYTHONPATH=/opt/calc -w /opt/calc calculator-app:latest pytest "$(PROJECT_DIR)/test/unit" --cov=app --cov-report=xml:results/coverage.xml --cov-report=html:results/coverage --junit-xml=results/unit_result.xml -m unit || exit 0
-	docker run --rm --volume "$(PROJECT_DIR):/opt/calc" --env PYTHONPATH=/opt/calc -w /opt/calc calculator-app:latest junit2html results/unit_result.xml results/unit_result.html
+	docker run --rm --volume "$(PROJECT_DIR):/opt/calc" --env PYTHONPATH=/opt/calc -w /opt/calc calculator-app:latest pytest "$(PROJECT_DIR)/test/unit" --cov=app --cov-report=xml:results/coverage.xml --cov-report=html:results/coverage --junit-xml="$(PROJECT_DIR)/results/unit_result.xml" -m unit || exit 0
+	docker run --rm --volume "$(PROJECT_DIR):/opt/calc" --env PYTHONPATH=/opt/calc -w /opt/calc calculator-app:latest junit2html "$(PROJECT_DIR)/results/unit_result.xml" "$(PROJECT_DIR)/results/unit_result.html"
 
 test-behavior:
-	docker run --rm --volume "$(PROJECT_DIR):/opt/calc" --env PYTHONPATH=/opt/calc -w /opt/calc calculator-app:latest behave --junit --junit-directory results/  --tags ~@wip test/behavior/
+	docker run --rm --volume "$(PROJECT_DIR):/opt/calc" --env PYTHONPATH=/opt/calc -w /opt/calc calculator-app:latest behave --junit --junit-directory "$(PROJECT_DIR)/results" --tags ~@wip test/behavior/
 	docker run --rm --volume "$(PROJECT_DIR):/opt/calc" --env PYTHONPATH=/opt/calc -w /opt/calc calculator-app:latest bash test/behavior/junit-reports.sh
 	
 test-api:
