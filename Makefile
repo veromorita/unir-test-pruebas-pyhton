@@ -1,7 +1,7 @@
 .PHONY: all $(MAKECMDGOALS)
 
 # Se reemplaza esta variable con la ruta absoluta del workspace del job en Jenkins
-PROJECT_DIR := $(shell echo "c:/Program Files/Jenkins/workspace/Laboratorio3" | tr '[:upper:]' '[:lower:]')
+PROJECT_DIR := C:/ProgramFiles/Jenkins/workspace/Laboratorio3
 
 build:
 	docker build -t calculator-app .
